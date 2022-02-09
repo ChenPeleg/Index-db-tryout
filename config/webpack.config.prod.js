@@ -1,6 +1,6 @@
 const path = require('path')
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: "./src/app.ts",
     output: {
         filename: "bundle.app.js",
@@ -8,7 +8,7 @@ module.exports = {
         publicPath: 'assets/js'
 
     },
-    devtool: "eval-cheap-module-source-map",
+    devtool: "(none)",
     devServer: {
         static: './',
         port: 8080

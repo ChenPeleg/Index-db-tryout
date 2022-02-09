@@ -9,7 +9,7 @@ class DOMRender {
         let s: string = 'asdf'
     }
     #alertMessage(m: string) {
-        alert(m)
+        //   alert(m)
 
     }
 
