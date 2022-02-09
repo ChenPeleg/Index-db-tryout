@@ -3,7 +3,7 @@ class DOMRender {
 
     }
     #render() {
-
+        let s: string = 'asdf'
     }
 
 }
