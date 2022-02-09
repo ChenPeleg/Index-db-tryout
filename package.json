@@ -1,0 +1,31 @@
+{
+  "name": "web-pack-basic-setup",
+  "version": "1.0.0",
+  "description": "web-pack basic configuration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PelegChen/web-pack-basic-setup.git"
+  },
+  "keywords": [
+    "web-pack",
+    "scafolding"
+  ],
+  "author": "Chen Peleg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PelegChen/web-pack-basic-setup/issues"
+  },
+  "homepage": "https://github.com/PelegChen/web-pack-basic-setup#readme",
+  "devDependencies": {
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2"
+  }
+}
