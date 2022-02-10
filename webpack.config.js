@@ -3,9 +3,9 @@ module.exports = {
     mode: "development",
     entry: "./src/app.ts",
     output: {
-        filename: "bundle.app.js",
-        path: path.resolve(__dirname, 'assets', 'js'),
-        publicPath: 'assets/js'
+        filename: "[name].js",
+        path: path.resolve(__dirname, 'assets/js'),
+        publicPath: '/assets/js'
 
     },
     devtool: "eval-cheap-module-source-map",
@@ -15,6 +15,11 @@ module.exports = {
         },
         compress: true,
         port: 9000,
+        devMiddleware: {
+            writeToDisk: true,
+        },
+
+        //  writeToDisk: true
     },
     // devServer: {
     //     static: './',
