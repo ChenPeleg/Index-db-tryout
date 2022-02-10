@@ -4,21 +4,16 @@ module.exports = {
     entry: "./src/app.ts",
     output: {
         filename: "[contenthash].js",
-        path: path.resolve(__dirname, 'assets/js'),
-        publicPath: '/assets/js'
+        path: path.resolve(__dirname, '..', 'dist'),
+        publicPath: '../dist'
 
     },
-    devtool: "(none)",
-    devServer: {
-        static: './',
-        port: 8080
-    },
+
 
     // file resolutions
     resolve: {
         extensions: ['.ts', '.js'],
     },
-
     // loaders
     module: {
         rules: [
