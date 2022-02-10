@@ -6,9 +6,14 @@ class DOMRender {
         this.#alertMessage(m)
     }
     #render() {
-        let s: string = 'asdf'
+        let s: string = 'asdf';
+
+
     }
     #alertMessage(m: string) {
+        const div: Element | null = document.querySelector('#main-div-id');
+        div?.innerHTML ? div.innerHTML = 'works' : null;
+        console.log('workds')
         //   alert(m)
 
     }
