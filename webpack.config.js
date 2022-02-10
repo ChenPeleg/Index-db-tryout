@@ -1,3 +1,4 @@
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
 module.exports = {
     mode: "development",
@@ -21,6 +22,9 @@ module.exports = {
 
         //  writeToDisk: true
     },
+    plugins: [
+        new CleanWebpackPlugin()
+    ],
     // devServer: {
     //     static: './',
     //     port: 8080

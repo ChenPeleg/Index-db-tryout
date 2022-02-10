@@ -16,7 +16,7 @@ class DOMRender {
     #alertMessage(m: string) {
         const div: Element | null = document.querySelector('#main-div-id');
         console.log(div)
-        div ? div.innerHTML = 'this works 2' + this.#getRand() : null;
+        div ? div.innerHTML = 'this works 3' + this.#getRand() : null;
         console.log('workds')
 
         //  alert(m)
