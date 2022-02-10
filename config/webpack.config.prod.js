@@ -1,3 +1,4 @@
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
 module.exports = {
     mode: "production",
@@ -9,7 +10,9 @@ module.exports = {
 
     },
 
-
+    plugins: [
+        new CleanWebpackPlugin()
+    ],
     // file resolutions
     resolve: {
         extensions: ['.ts', '.js'],
@@ -21,7 +24,11 @@ module.exports = {
                 test: /\.tsx?/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
-            }
+            },
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
         ]
     }
 }

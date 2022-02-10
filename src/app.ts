@@ -1,4 +1,4 @@
-import randomImoji from './randomImoji';
+import randomImoji from './services/randomImoji';
 
 
 class DOMRender {
