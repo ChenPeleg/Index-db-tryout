@@ -10,9 +10,16 @@ module.exports = {
     },
     devtool: "eval-cheap-module-source-map",
     devServer: {
-        static: './',
-        port: 8080
+        static: {
+            directory: path.join(__dirname),
+        },
+        compress: true,
+        port: 9000,
     },
+    // devServer: {
+    //     static: './',
+    //     port: 8080
+    // },
 
     // file resolutions
     resolve: {
