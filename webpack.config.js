@@ -1,10 +1,11 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path')
 module.exports = {
     mode: "development",
     entry: "./src/app.ts",
     output: {
-        filename: "[name].js",
+        filename: "main.[contenthash].js",
         path: path.resolve(__dirname, 'build'),
         publicPath: 'build'
 
@@ -24,7 +25,7 @@ module.exports = {
         //  writeToDisk: true
     },
     plugins: [
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(), new HtmlWebpackPlugin()
     ],
 
 
