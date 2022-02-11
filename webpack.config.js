@@ -25,7 +25,9 @@ module.exports = {
         //  writeToDisk: true
     },
     plugins: [
-        new CleanWebpackPlugin(), new HtmlWebpackPlugin()
+        new CleanWebpackPlugin(), new HtmlWebpackPlugin({
+            template: './src/template.html'
+        })
     ],
 
 
