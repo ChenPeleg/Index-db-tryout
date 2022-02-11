@@ -5,8 +5,8 @@ module.exports = {
     entry: "./src/app.ts",
     output: {
         filename: "[name].js",
-        path: path.resolve(__dirname, 'assets/js'),
-        publicPath: '/assets/js'
+        path: path.resolve(__dirname, 'build'),
+        publicPath: 'build'
 
     },
     devtool: "eval-cheap-module-source-map",
@@ -16,6 +16,7 @@ module.exports = {
         },
         compress: true,
         port: 9000,
+
         devMiddleware: {
             writeToDisk: true,
         },
@@ -25,10 +26,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin()
     ],
-    // devServer: {
-    //     static: './',
-    //     port: 8080
-    // },
+
 
     // file resolutions
     resolve: {
@@ -44,8 +42,8 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
+                test: /\.scss$/i,
+                use: ["style-loader", "css-loader", "sass-loader"],
             },
         ]
     }

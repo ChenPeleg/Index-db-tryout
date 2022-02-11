@@ -6,7 +6,8 @@ export default () => {
     const e = emojis[Math.floor(Math.random() * emojis.length)];
     let hex = e.codePointAt(0)?.toString(16)
     let emo = String.fromCodePoint(Number("0x" + hex));
-    console.log(emo)
+    console.log(emo);
+
     return emo
 
 };

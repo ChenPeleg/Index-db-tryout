@@ -1,5 +1,5 @@
 import randomImoji from './services/randomImoji';
-
+import './style/style.main.scss'
 
 class DOMRender {
     constructor() {
@@ -16,8 +16,8 @@ class DOMRender {
     #alertMessage(m: string) {
         const div: Element | null = document.querySelector('#main-div-id');
         console.log(div)
-        div ? div.innerHTML = 'this works 3' + this.#getRand() : null;
-        console.log('workds')
+        div ? div.innerHTML = 'this works 4' + this.#getRand() : null;
+
 
         //  alert(m)
 
