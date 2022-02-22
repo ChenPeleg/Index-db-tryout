@@ -1,3 +1,5 @@
+@import "./style.functions.scss";
+
 body {
     padding: 0.3em;
     height: 90vh;
@@ -5,9 +7,12 @@ body {
     h2 {
         color: #690f2b;
         font-size: x-large;
+        @include elevationfn(2);
     }
     div#main-div-id {
         padding: 2em;
         font-size: 50px;
+        border-radius: 10px;
+        background-color: #d7d2ee;
     }
 }
