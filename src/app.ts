@@ -1,4 +1,4 @@
-import { DomRender } from './services/dom-render';
+import { PageBuilder } from './services/page-builder';
 
 import './style/style.main.scss'
 
@@ -7,7 +7,7 @@ class App {
 
     }
     start() {
-        const renderer = new DomRender();
+        const renderer = new PageBuilder();
         renderer.Message('App started 2')
 
     }

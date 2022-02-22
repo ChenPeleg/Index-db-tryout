@@ -1,8 +1,9 @@
 
 import randomImoji from './randomImoji';
+import { translations } from './translations';
 
 
-export class DomRender {
+export class PageBuilder {
     constructor() {
 
     }
@@ -12,15 +13,15 @@ export class DomRender {
 
     #displayMessage(m: string) {
         const div: Element | null = document.querySelector('#main-div-id');
-        console.log(div)
-        div ? div.innerHTML = m + ' ' + this.#getRand() : null;
+        const consola = translations.console;
+        div ? div.innerHTML = `<div>${consola + this.#getRand()}</div>` + m + ' ' + '' : null;
 
 
         //  alert(m)
 
     }
     #getRand(): string {
-        return '<br><br>' + randomImoji();
+        return ' ' + randomImoji();
     }
 
 }

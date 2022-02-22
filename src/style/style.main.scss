@@ -1,18 +1,25 @@
 @import "./style.functions.scss";
+$main-font-size: 30px;
 
 body {
     padding: 0.3em;
+    padding-top: 10px;
     height: 90vh;
     background: linear-gradient(#d7d2ee, #e2b0c0);
     h2 {
+        margin-top: 5px;
         color: #690f2b;
         font-size: x-large;
-        @include elevationfn(2);
+        padding: 10px;
+        @include elevationfn(5);
     }
     div#main-div-id {
-        padding: 2em;
-        font-size: 50px;
+        width: 50vw;
+        height: 50vh;
+        padding: 0.2em;
+        font-size: $main-font-size;
         border-radius: 10px;
         background-color: #d7d2ee;
+        @include elevationfn(5);
     }
 }
