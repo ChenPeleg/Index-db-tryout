@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "command": "npm run serve",
+            "name": "serve",
+            "request": "launch",
+            "type": "node-terminal",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "Loopback:\\s+(https?://\\S+)",
+                "uriFormat": "%s"
+            },
+        },
+        {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
