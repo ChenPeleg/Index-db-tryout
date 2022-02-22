@@ -7,13 +7,13 @@ module.exports = {
     output: {
         filename: "main.[contenthash].js",
         path: path.resolve(__dirname, 'build'),
-        publicPath: 'build'
+        publicPath: './'
 
     },
     devtool: "eval-cheap-module-source-map",
     devServer: {
         static: {
-            directory: path.join(__dirname),
+            directory: path.join(__dirname, 'build'),
         },
         compress: true,
         port: 9000,

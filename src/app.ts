@@ -23,9 +23,6 @@ class DOMRender {
 
     }
     #getRand(): string {
-
-
-
         return '<br><br>' + randomImoji();
     }
 
