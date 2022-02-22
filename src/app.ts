@@ -1,40 +1,26 @@
+import { HelperUtils } from './services/helper-utils';
 import { PageBuilder } from './services/page-builder';
 
 import './style/style.main.scss'
 
-const monkeyPatchConsoleLog = () => {
-    const Log = console.log;
-    console.log = (...args) => {
-        Log(...args);
-        setTimeout(_ => {
-            const logger = document.getElementById('console-logger');
-            if (!logger) {
-                return
-            }
-            logger.innerHTML += '\n' + args.toString();
-        })
-    }
 
-}
 
 
 class App {
     constructor() {
 
     }
+    public buttonClicked = (event: any) => {
+        console.log(event.detail)
+    }
     start() {
-        const renderer = new PageBuilder();
+        HelperUtils.monkeyPatchConsoleLog();
+        const renderer = new PageBuilder(this.buttonClicked);
         renderer.render('');
-        console.log('asdfasdf')
-        console.log('asdfasdf')
-        console.log('asdfasdf')
-        console.log('asdfasdf')
-        console.log('asdfasdf')
 
     }
 
 
 }
-monkeyPatchConsoleLog();
 const app: App = new App();
 app.start();
