@@ -3,5 +3,8 @@ import randomImoji from './randomImoji';
 
 
 export const translations = {
-    console: 'קונסולה'
+    console: 'ניהול',
+    openDB: 'פתח חדש',
+    deleteDB: 'מחק',
+    viewDB: 'צפייה'
 }

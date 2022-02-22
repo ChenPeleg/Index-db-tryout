@@ -1,7 +1,20 @@
 @import "./style.functions.scss";
 $main-font-size: 30px;
 
+@mixin main-panel {
+    height: 50vh;
+    padding: 0.2em;
+    padding-left: 1em;
+    padding-right: 1em;
+    display: inline-block;
+    font-size: $main-font-size;
+    border-radius: 10px;
+    margin: 10px;
+    @include elevationfn(5);
+}
+
 body {
+    font-family: "Alef", sans-serif;
     padding: 0.3em;
     padding-top: 10px;
     height: 90vh;
@@ -14,12 +27,44 @@ body {
         @include elevationfn(5);
     }
     div#main-div-id {
+        @include main-panel();
         width: 50vw;
-        height: 50vh;
-        padding: 0.2em;
-        font-size: $main-font-size;
-        border-radius: 10px;
         background-color: #d7d2ee;
-        @include elevationfn(5);
+
+        button.db-action-button {
+            cursor: pointer;
+            font-family: "Alef", sans-serif;
+            font-size: $main-font-size - 10px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #bbb2e0;
+            border: none;
+            transition: box-shadow 100ms ease-in-out;
+            @include elevationfn(2);
+            &:hover {
+                @include elevationfn(10);
+            }
+        }
+    }
+    div#console-div-id {
+        width: 30vw;
+        background-color: #c7c19a;
+        @include main-panel();
+        &::-webkit-scrollbar-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            color: #690f2b;
+        }
+        div#console-logger {
+            font-size: 17px;
+            white-space: pre;
+            overflow-y: scroll;
+            max-height: 39vh;
+            &::-webkit-scrollbar-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                color: #690f2b;
+            }
+        }
     }
 }
