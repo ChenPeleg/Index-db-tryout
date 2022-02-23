@@ -1,5 +1,6 @@
 import { HelperUtils } from './services/helper-utils';
 import { PageBuilder } from './services/page-builder';
+import './scripts/web-componenet-modal.js'
 
 import './style/style.main.scss'
 
