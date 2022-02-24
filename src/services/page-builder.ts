@@ -1,6 +1,7 @@
 
 import { dbAction } from '../models/db-actions.enumb';
-import randomImoji from './randomImoji';
+import EmojiHelper from './EmojiHelper';
+import randomImoji from './EmojiHelper';
 import { translations } from './translations';
 
 
@@ -53,7 +54,7 @@ export class PageBuilder {
     }
 
     #getRand(): string {
-        return ' ' + randomImoji();
+        return ' ' + EmojiHelper.randomImoji();
     }
 
 }

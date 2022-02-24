@@ -28,7 +28,7 @@ body {
     }
     div#main-div-id {
         @include main-panel();
-        width: 50vw;
+        width: 50vw;  
         background-color: #d7d2ee;
 
         button.db-action-button {
