@@ -1,7 +1,5 @@
 
-
-
-export const allCSSProps = {
+const CSSProps = {
 
     "align-content": "Specifies the alignment of flexible container's items within the flex container.",
     "align-items": "Specifies the default alignment for items within the flex container.",
@@ -171,3 +169,6 @@ export const allCSSProps = {
     "word-wrap": "Specifies whether to break words when the content overflows the boundaries of its container.",
     "z-index": "",
 }
+export type CSSObejct = Partial<typeof CSSProps>;
+export type CSS = Record<string, CSSObejct>;
+
