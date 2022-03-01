@@ -49,7 +49,6 @@ class StatusIndicator extends HTMLElement {
     סטטוס
    : <slot> זמין </slot>
     </div>
-
     `
 
   }

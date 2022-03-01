@@ -2,6 +2,7 @@ import { HelperUtils } from './services/helper-utils';
 import { PageBuilder } from './services/page-builder';
 import './scripts/web-componenet-modal.js'
 import './scripts/web-componenet-staus-indicator.ts'
+import './scripts/web-cmp-screen-console.ts'
 import './style/style.main.scss'
 
 

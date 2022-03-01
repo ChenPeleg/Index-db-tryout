@@ -168,6 +168,8 @@ const CSSProps = {
     "word-spacing": "Sets the spacing between words.",
     "word-wrap": "Specifies whether to break words when the content overflows the boundaries of its container.",
     "z-index": "",
+    "grid-template-columns": "",
+    "filter": '',
 }
 export type CSSObejct = Partial<typeof CSSProps>;
 export type CSS = Record<string, CSSObejct>;

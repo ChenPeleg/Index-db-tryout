@@ -1,6 +1,6 @@
 @import "./style.functions.scss";
 $main-font-size: 30px;
-
+$delete: #c5e6e3;
 @mixin main-panel {
     height: 50vh;
     padding: 0.2em;
@@ -28,7 +28,7 @@ body {
     }
     div#main-div-id {
         @include main-panel();
-        width: 50vw;  
+        width: 50vw;
         background-color: #d7d2ee;
 
         button.db-action-button {
