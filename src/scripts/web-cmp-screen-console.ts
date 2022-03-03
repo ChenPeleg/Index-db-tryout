@@ -122,10 +122,11 @@ class ScreenConsole extends HTMLElement {
       <div id="console-logger"></div> 
     
        <div id="screen-console-command-buttons">
-            <div class="button-devider"></div>
+       <button class="command-buttons" id="close-button">	&#10060;</button> 
+             <div class="button-devider"></div>
              <button class="command-buttons" id="trash-button">&#128465;</button> 
              <div class="button-devider"></div>
-             <button class="command-buttons" id="close-button">	&#10060;</button> 
+             <button class="command-buttons" id="minify-button">_</button> 
              <div class="button-devider"></div>
        </div>  
       <div id="screen-console-locator">${gridOfDivs}</div> 
@@ -141,6 +142,12 @@ class ScreenConsole extends HTMLElement {
     }
     this.consoleElement = shadowRoot.querySelector('#screen-console-div-id') as HTMLElement;
     this.consoleLogger = shadowRoot.querySelector('#console-logger') as HTMLElement;
+    const deleteBtn = shadowRoot.querySelector('#trash-button') as HTMLElement;
+    deleteBtn.addEventListener('click', this.clickedClear.bind(this))
+    const closeBtn = shadowRoot.querySelector('#close-button') as HTMLElement;
+    closeBtn.addEventListener('click', this.clickedClose.bind(this))
+    const miniBtn = shadowRoot.querySelector('#minify-button') as HTMLElement;
+    miniBtn.addEventListener('click', this.clickedMinify.bind(this))
 
   }
   clickedLocation(event: MouseEvent) {
@@ -153,16 +160,22 @@ class ScreenConsole extends HTMLElement {
       this.consoleElement.style.left = stl.left;
       this.consoleElement.style.right = stl.right;
 
-
-      // for (const prop in stl) {
-      //   const side: Side = prop;
-
-
-      //   //  this.consoleElement.style[prop] = stl[prop] as string
-
-      // }
-      //console.log(number, stl)
     }
+  }
+  clickedClear(event: MouseEvent) {
+    this.dataRows = [];
+    this.showLogUpdateScreen(this.dataRows)
+
+  }
+  clickedClose(event: MouseEvent) {
+    // this.dataRows = [];
+    // this.showLogUpdateScreen(this.dataRows)
+
+  }
+  clickedMinify(event: MouseEvent) {
+    // this.dataRows = [];
+    // this.showLogUpdateScreen(this.dataRows)
+
   }
   private monkeyPatchConsoleLog(): void {
     const originalFN = window.console.log;
@@ -236,7 +249,7 @@ class ScreenConsole extends HTMLElement {
 
     })
     dataRows.forEach(r => {
-      HTML += r.text + '\n';
+      HTML += '<br><b>></b> ' + r.text;
     })
     return HTML
   }
