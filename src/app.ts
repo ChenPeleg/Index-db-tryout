@@ -26,4 +26,11 @@ class App {
 
 }
 const app: App = new App();
+setTimeout(_ => {
+    for (let i = 0; i < 20; i++) {
+        console.log('asdfasdfasdfasdf')
+    }
+}, 2000)
+
+
 app.start();
