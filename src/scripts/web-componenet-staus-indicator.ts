@@ -42,7 +42,7 @@ class StatusIndicator extends HTMLElement {
       }
     }
     const cssAsStr: string = WebComponentsUtils.objectToCssString(cssObj)
-    console.log(cssAsStr)
+
     shadowRoot.innerHTML = ` 
     <style>${cssAsStr}</style>
     <div class="status-div">
