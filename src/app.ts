@@ -16,7 +16,7 @@ class App {
 
     }
     public buttonClicked = (event: any) => {
-        console.log(event.detail)
+        //  console.log(event.detail)
     }
     start() {
         HelperUtils.monkeyPatchConsoleLog();
