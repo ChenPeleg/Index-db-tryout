@@ -263,7 +263,7 @@ class ScreenConsole extends HTMLElement {
 
   }
   private showLogUpdateScreen(dataRows: ConsoleData[]) {
-    console.dir(this.consoleLogger)
+
     if (!this.consoleLogger) {
       return
     }
