@@ -12,17 +12,26 @@ import { DataBase } from './db/db-DataBase';
 
 
 class App {
+    private db: DataBase;
     constructor() {
-
+        this.db = DataBase.Instance;
     }
     public buttonClicked = (event: any) => {
-        //  console.log(event.detail)
+        console.log(event.detail)
+        switch (event.detail.action) {
+            case 'add':
+                const newRand = Math.floor(Math.random() * 100)
+                this.db.add({ name: "chen", id: 0, randomNumber: newRand })
+                break;
+            default:
+                break;
+        }
     }
     start() {
         HelperUtils.monkeyPatchConsoleLog();
         const renderer = new PageBuilder(this.buttonClicked);
         renderer.render('');
-        const db = DataBase.Instance;
+
 
     }
 
