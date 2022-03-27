@@ -354,6 +354,28 @@ class ScreenConsole extends HTMLElement {
     }
     return initial
   }
+  static get observedAttributes() {
+    return ['defaultState', 'defaultPosition'];
+  }
+
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    switch (name) {
+      case 'defaultState':
+        break;
+      case 'defaultPosition':
+
+        break;
+    }
+  }
+  connectedCallback() {
+
+
+    if (this.hasAttribute('defaultState')) {
+      const defaultState = this.getAttribute('defaultState');
+      if (defaultState === 'closed')
+        this.consoleElement.classList.add('hidden')
+    }
+  }
 
 
 
