@@ -12,14 +12,16 @@ interface ConsoleData {
 class ScreenConsole extends HTMLElement {
   private readonly screenIdPrefix = 'grid-squer-'
   private consoleElement: HTMLElement;
+  private consoleLocator: HTMLElement;
   private consoleLogger: HTMLElement;
   private dataRows: ConsoleData[] = [];
-  private MaxLogLength: number = 40;
+  private MaxLogLength: number = 100;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.monkeyPatchConsoleLog();
+    document.addEventListener('keyup', this.keyPressCaptue.bind(this))
 
 
     const backgroundColor = '#c5e6e3';
@@ -32,8 +34,8 @@ class ScreenConsole extends HTMLElement {
         top: '1px',
         "width": "30vw",
         "height": "30vw",
-        "min-height": "10vw",
-        "min-width": "10vw",
+        "min-height": "5vw",
+        "min-width": "5vw",
         "max-height": "90vw",
         "max-width": "40vw",
         "margin": "0px 20px",
@@ -46,14 +48,26 @@ class ScreenConsole extends HTMLElement {
         "border-radius": "5px",
 
         'left': '1px',
-        // "display": "inline-flex",
+
 
         "border": "2px solid grey",
         resize: 'both',
         overflow: 'auto',
-        'transition': `top ${transitionDetails}, left ${transitionDetails}`,
+        'transition': `top ${transitionDetails}, left ${transitionDetails}, width ${transitionDetails}, height ${transitionDetails}`,
 
       },
+      "div#screen-console-div-id.minified": {
+        "width": "3vw",
+        "height": "4vh",
+        "min-height": "5vh",
+        "min-width": "3vw",
+        overflow: 'hidden',
+        resize: 'none'
+      },
+      "div#screen-console-div-id.hidden": {
+        display: 'none'
+      },
+
       '#screen-console-command-buttons': {
         display: 'flex',
         'min-width': '70px',
@@ -62,6 +76,16 @@ class ScreenConsole extends HTMLElement {
         bottom: '0',
         right: '0',
         transition: "background-color 400ms ease-in-out"
+      },
+      '#maximize-button': {
+        display: 'none'
+      },
+      'div.minified > #maximize-button': {
+        display: 'block'
+      },
+
+      'div.minified > #screen-console-command-buttons, div.minified > #console-header': {
+        display: 'none'
       },
       '.command-buttons': {
         width: '40px',
@@ -101,6 +125,9 @@ class ScreenConsole extends HTMLElement {
         'background': gradient1,
         transition: "background-color 400ms ease-in-out"
       },
+      "div.minified > #screen-console-locator, div.minified > #console-logger": {
+        display: 'none'
+      },
       'div.grid-locator-squer': {
         transition: "background-color 200ms ease-in-out",
         cursor: 'pointer',
@@ -118,9 +145,10 @@ class ScreenConsole extends HTMLElement {
     shadowRoot.innerHTML = ` 
     <style>${cssAsStr}</style>
     <div dir="ltr" id="screen-console-div-id">
-      console 
+      <button class="command-buttons" id="maximize-button">&#128470;</button> 
+      <div id="console-header">console</div> 
       <div id="console-logger"></div> 
-    
+  
        <div id="screen-console-command-buttons">
        <button class="command-buttons" id="close-button">	&#10060;</button> 
              <div class="button-devider"></div>
@@ -141,6 +169,7 @@ class ScreenConsole extends HTMLElement {
       })
     }
     this.consoleElement = shadowRoot.querySelector('#screen-console-div-id') as HTMLElement;
+    this.consoleLocator = shadowRoot.querySelector('#screen-console-locator') as HTMLElement;
     this.consoleLogger = shadowRoot.querySelector('#console-logger') as HTMLElement;
     const deleteBtn = shadowRoot.querySelector('#trash-button') as HTMLElement;
     deleteBtn.addEventListener('click', this.clickedClear.bind(this))
@@ -148,7 +177,21 @@ class ScreenConsole extends HTMLElement {
     closeBtn.addEventListener('click', this.clickedClose.bind(this))
     const miniBtn = shadowRoot.querySelector('#minify-button') as HTMLElement;
     miniBtn.addEventListener('click', this.clickedMinify.bind(this))
+    const maxBtn = shadowRoot.querySelector('#maximize-button') as HTMLElement;
+    maxBtn.addEventListener('click', this.clickedMaximize.bind(this))
 
+  }
+  keyPressCaptue(event: KeyboardEvent) {
+
+    if (!(event.code === 'KeyC' && event.altKey)) {
+      return
+    }
+    if (this.consoleElement.classList.contains('minified') && this.consoleElement.classList.contains('hidden')) {
+      setTimeout(_ => {
+        this.consoleElement.classList.remove('minified')
+      }, 500)
+    }
+    this.consoleElement.classList.toggle('hidden')
   }
   clickedLocation(event: MouseEvent) {
     if (event?.target) {
@@ -165,16 +208,17 @@ class ScreenConsole extends HTMLElement {
   clickedClear(event: MouseEvent) {
     this.dataRows = [];
     this.showLogUpdateScreen(this.dataRows)
-
   }
   clickedClose(event: MouseEvent) {
-    // this.dataRows = [];
-    // this.showLogUpdateScreen(this.dataRows)
+    this.consoleElement.classList.add('hidden')
 
   }
   clickedMinify(event: MouseEvent) {
-    // this.dataRows = [];
-    // this.showLogUpdateScreen(this.dataRows)
+    this.consoleElement.classList.add('minified');
+    //this.consoleLocator.classList.add('minified');
+  }
+  clickedMaximize(event: MouseEvent) {
+    this.consoleElement.classList.remove('minified');
 
   }
   private monkeyPatchConsoleLog(): void {
@@ -230,6 +274,9 @@ class ScreenConsole extends HTMLElement {
     dataRows.forEach((r: ConsoleData) => {
       r.text = '';//r.log.toString();
       switch (typeof r.log) {
+        case 'string':
+          r.text = r.log;
+          break;
         case 'number':
         case 'bigint':
           r.text = r.log.toString();
@@ -241,7 +288,8 @@ class ScreenConsole extends HTMLElement {
             r.text = 'null'
           break;
         case 'boolean':
-          r.text = r.log ? 'true' : 'false'
+          r.text = r.log ? 'true' : 'false';
+          break;
         case 'undefined':
           r.text = 'undefined'
 
