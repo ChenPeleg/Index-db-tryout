@@ -4,6 +4,8 @@ import './scripts/web-componenet-modal.js'
 import './scripts/web-componenet-staus-indicator.ts'
 import './scripts/web-cmp-screen-console.ts'
 import './style/style.main.scss'
+import { DataBase } from './db/db-DataBase';
+
 
 
 
@@ -20,6 +22,7 @@ class App {
         HelperUtils.monkeyPatchConsoleLog();
         const renderer = new PageBuilder(this.buttonClicked);
         renderer.render('');
+        const db = DataBase.Instance;
 
     }
 

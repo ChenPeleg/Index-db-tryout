@@ -93,9 +93,7 @@ class Modal extends HTMLElement {
     backdrop.addEventListener('click', this._cancel.bind(this));
     cancelButton.addEventListener('click', this._cancel.bind(this));
     confirmButton.addEventListener('click', this._confirm.bind(this));
-    // cancelButton.addEventListener('cancel', () => {
-    //   console.log('Cancel inside the component');
-    // });
+ 
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
