@@ -3,7 +3,7 @@
  * produced.
  */
 
-import { DBOpenEvent, DBRecord, StoreName } from "./db-models";
+import { DBOpenEvent, DBRecord, Result, StoreName } from "./db-models";
 
 export class DataBase {
     /**
@@ -28,41 +28,7 @@ export class DataBase {
     private initDB(): Promise<IDBDatabase | Error> {
         //const openReq: IDBOpenDBRequest = window.indexedDB.open(this.MAIN_DB_NAME, 1);
         return this.openDBRequest(this.MAIN_DB_NAME);
-        // return new Promise<IDBDatabase | Error>((resolve, reject) => {
-        //     openReq.addEventListener('success', (event: DBOpenEvent) => {
-        //         const db: IDBDatabase | undefined = event?.target?.result;
-        //         if (!db) {
-        //             reject(new Error('Error open request failed'))
-        //             return;
-        //         }
-        //         try {
-        //             // const trasaction: IDBTransaction = db.transaction(this.allStoreNames, 'readwrite');
 
-        //             resolve(db);
-        //         } catch (e: any) {
-        //             reject(new Error(e.toString()))
-        //         }
-
-
-
-
-        //     })
-        //     openReq.addEventListener('upgradeneeded', (event: DBOpenEvent) => {
-        //         const db: IDBDatabase | undefined = event?.target?.result;
-        //         if (!db) {
-        //             this.dBError('Error open request failed');
-        //             return;
-        //         }
-        //         this.createObjectStoreOnUpgrade(db, this.MAIN_STORE_NAME)
-        //         this.createObjectStoreOnUpgrade(db, this.MANAGMENT_STORE_NAME)
-        //         console.log('upgradeneeded');
-        //     })
-        //     openReq.addEventListener('error', () => {
-        //         this.dBError('Error open request failed');
-        //     })
-
-
-        // }) 
     }
     private openDBRequest(dbName: string): Promise<IDBDatabase | Error> {
         const openReq: IDBOpenDBRequest = window.indexedDB.open(dbName, 1);
@@ -152,6 +118,30 @@ export class DataBase {
 
 
     }
+    private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: 'add' | 'get', record: R): Promise<Result<any>> {
+        return new Promise((res, rej) => {
+            if (!record.id) {
+                record.id = this.newId;
+            }
+            let request: IDBRequest;
+            request = store.add(record);
+
+            request.onsuccess = (ev: Event) => {
+                res({
+                    success: true,
+                    data: request
+                })
+            }
+            request.onerror = (ev: Event) => {
+                rej({
+                    success: false, error: ev
+                })
+            }
+
+
+        })
+
+    }
     public createObjectStoreOnUpgrade(db: IDBDatabase, storeName: string): void {
         if (db.objectStoreNames.contains(storeName)) {
             return;
@@ -162,11 +152,10 @@ export class DataBase {
         const db = this.mainDb;
         this.getTrasaction(db!)
             .then(trans => this.getStore(storeName, trans))
-            .then((store: IDBObjectStore) => {
-                if (!record.id) {
-                    record.id = this.newId;
-                }
-                const request: IDBRequest = store.add(record);
+            .then((store: IDBObjectStore) => this.makeRequest(store, 'add', record))
+            .then((res: Result<any>) => console.log(res))
+            .catch(e => {
+                console.error("Cought Error: ", e);
             });
 
 
