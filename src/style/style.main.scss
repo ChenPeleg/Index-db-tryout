@@ -45,6 +45,26 @@ body {
                 @include elevationfn(10);
             }
         }
+        input.db-action-input {
+            cursor: pointer;
+            font-family: "Alef", sans-serif;
+            font-size: $main-font-size - 10px;
+            width: 90%;
+            margin: 10px;
+            padding: 10px;
+            background-color: #e2dff1;
+            border: none;
+            outline: none;
+            transition: box-shadow 100ms ease-in-out;
+            //  @include elevationfn(2);
+            @include elevationinsetfn(1);
+            &:hover,
+            &:focus,
+            &:active {
+                // box-shadow: inset 2px 2px 2px 2px black;
+                @include elevationinsetfn(2);
+            }
+        }
     }
     div#console-div-id {
         width: 30vw;

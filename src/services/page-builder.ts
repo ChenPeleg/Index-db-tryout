@@ -33,7 +33,6 @@ export class PageBuilder {
             button.id = action + '-button-id';
             button.addEventListener('click', (e) => {
                 const ev = new CustomEvent('db_button', {
-
                     detail: {
                         originalEvent: e,
                         action: action
@@ -45,6 +44,25 @@ export class PageBuilder {
             button.classList.add('db-action-button');
             controlPanelDiv?.appendChild(button);
         }
+
+        const input = document.createElement('input');
+
+        input.id = 'text-input-id';
+        input.addEventListener('click', (e) => {
+            const ev = new CustomEvent('db_button', {
+                detail: {
+                    originalEvent: e,
+                    action: 'type-text'
+                }
+            });
+            controlPanelDiv.dispatchEvent(ev)
+        })
+        input.classList.add('db-action-input');
+        controlPanelDiv?.appendChild(input);
+
+
+
+
         controlPanelDiv.addEventListener('db_button', (e) => {
             this.#eventFunc(e)
         })

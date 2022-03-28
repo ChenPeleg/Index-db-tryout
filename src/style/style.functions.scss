@@ -15,6 +15,11 @@
         #{map.get(_get-penumbra-map($color, $opacity), $zValue)},
         #{map.get(_get-ambient-map($color, $opacity), $zValue)};
 }
+@mixin elevationinsetfn($zValue, $color: black, $opacity: 1) {
+    box-shadow: inset #{map.get(_get-umbra-map($color, $opacity), $zValue)},
+        inset #{map.get(_get-penumbra-map($color, $opacity), $zValue)},
+        inset #{map.get(_get-ambient-map($color, $opacity), $zValue)};
+}
 
 @function elevation_func($level) {
     // h-offset v-offset blur spread color
