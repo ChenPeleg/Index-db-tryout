@@ -2,7 +2,7 @@
 $main-font-size: 30px;
 $delete: #c5e6e3;
 @mixin main-panel {
-    height: 50vh;
+    height: 60vh;
     padding: 0.2em;
     padding-left: 1em;
     padding-right: 1em;
@@ -64,6 +64,14 @@ body {
                 // box-shadow: inset 2px 2px 2px 2px black;
                 @include elevationinsetfn(2);
             }
+        }
+        div.db-message-div {
+            font-family: "Alef", sans-serif;
+            font-size: $main-font-size - 10px;
+            width: 90%;
+            margin: 10px;
+            padding: 10px;
+            background-color: #7c65eb;
         }
     }
     div#console-div-id {

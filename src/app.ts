@@ -5,6 +5,7 @@ import './scripts/web-componenet-staus-indicator.ts'
 import './scripts/web-cmp-screen-console.ts'
 import './style/style.main.scss'
 import { DataBase } from './db/db-DataBase';
+import { translations } from './services/translations';
 
 
 
@@ -13,24 +14,44 @@ import { DataBase } from './db/db-DataBase';
 
 class App {
     private db: DataBase;
+    private inputText: string = "";
+    private mainPage: PageBuilder | null = null;
     constructor() {
         this.db = DataBase.Instance;
     }
-    public buttonClicked = (event: any) => {
-        console.log(event.detail)
+
+    private buttonClicked = (event: any) => {
+        console.log(event.detail.action)
         switch (event.detail.action) {
             case 'add':
                 const newRand = Math.floor(Math.random() * 100)
-                this.db.add({ name: "chen", id: 0, randomNumber: newRand })
+                const data = this.inputText || 'new data';
+                this.db.add({ data, id: 0, randomNumber: newRand }).then(res => {
+                    const m = translations.success.add + ' ' + translations.details + ' ' + (res?.toString() || '');
+                    this.mainPage?.showMessage(m)
+                })
+                break;
+            case 'type-text':
+                const text = event.detail.originalEvent?.target?.value;
+                this.inputText = text || this.inputText;
+                break;
+            case 'view':
+                this.db.add({ id: 30 })
+
+
+
                 break;
             default:
                 break;
         }
     }
+    private showMessage(text: string) {
+
+    }
     start() {
         HelperUtils.monkeyPatchConsoleLog();
-        const renderer = new PageBuilder(this.buttonClicked);
-        renderer.render('');
+        this.mainPage = new PageBuilder(this.buttonClicked);
+        this.mainPage.render('');
 
 
     }

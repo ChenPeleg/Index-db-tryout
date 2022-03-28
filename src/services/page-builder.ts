@@ -16,13 +16,20 @@ export class PageBuilder {
     public render(m: string) {
         this.#renderScreen(m)
     }
+    public showMessage(m: string) {
+        this.#showMessage(m)
+    }
+    #showMessage(m: string) {
+        const messageDiv = document.querySelector('#message-div-id');
+        if (!messageDiv) return;
+        messageDiv.innerHTML = m;
 
+    }
     #renderScreen(m: string): HTMLElement {
         const controlPanelDiv: HTMLElement = document.querySelector('#main-div-id') as HTMLElement;
 
         const controlePanelText = translations.console;
         controlPanelDiv ? controlPanelDiv.innerHTML = `<div>${controlePanelText + this.#getRand()}</div>` + m + ' ' + '' : null;
-
 
         const dbActions = dbAction;
         for (const action in dbAction) {
@@ -48,7 +55,7 @@ export class PageBuilder {
         const input = document.createElement('input');
 
         input.id = 'text-input-id';
-        input.addEventListener('click', (e) => {
+        input.addEventListener('input', (e) => {
             const ev = new CustomEvent('db_button', {
                 detail: {
                     originalEvent: e,
@@ -58,7 +65,11 @@ export class PageBuilder {
             controlPanelDiv.dispatchEvent(ev)
         })
         input.classList.add('db-action-input');
-        controlPanelDiv?.appendChild(input);
+        controlPanelDiv.appendChild(input);
+        const messageDiv = document.createElement('div');
+        messageDiv.id = 'message-div-id';
+        messageDiv.classList.add('db-message-div');
+        controlPanelDiv.appendChild(messageDiv);
 
 
 

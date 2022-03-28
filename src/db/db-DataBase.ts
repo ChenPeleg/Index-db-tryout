@@ -148,9 +148,9 @@ export class DataBase {
         }
         db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
     }
-    public add<R extends DBRecord>(record: R, storeName?: StoreName): void | Promise<any> {
+    public add<R extends DBRecord>(record: R, storeName?: StoreName): Promise<any> {
         const db = this.mainDb;
-        this.getTrasaction(db!)
+        return this.getTrasaction(db!)
             .then(trans => this.getStore(storeName, trans))
             .then((store: IDBObjectStore) => this.makeRequest(store, 'add', record))
             .then((res: Result<any>) => console.log(res))
