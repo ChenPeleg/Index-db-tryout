@@ -18,30 +18,58 @@ export class DataBase {
     private static instance: DataBase;
     private constructor() {
         console.log('db constractor');
-
-        this.initDB().then((db) => {
-            if (db instanceof Error) {
-                this.dBError(db);
-                return;
-            }
-            this.mainDb = db;
-            //  console.log('this.dbTransaction', this.dbTransaction);
-
-            // this.mainStore = db.objectStore(this.MAIN_STORE_NAME);
-
+        this.initDB().then(db => {
+            this.mainDb = db as IDBDatabase;
         }, (e) => {
             this.dBError(e)
-        })
-            ;
+        });
     }
 
     private initDB(): Promise<IDBDatabase | Error> {
-        const openReq: IDBOpenDBRequest = window.indexedDB.open(this.MAIN_DB_NAME, 1);
+        //const openReq: IDBOpenDBRequest = window.indexedDB.open(this.MAIN_DB_NAME, 1);
+        return this.openDBRequest(this.MAIN_DB_NAME);
+        // return new Promise<IDBDatabase | Error>((resolve, reject) => {
+        //     openReq.addEventListener('success', (event: DBOpenEvent) => {
+        //         const db: IDBDatabase | undefined = event?.target?.result;
+        //         if (!db) {
+        //             reject(new Error('Error open request failed'))
+        //             return;
+        //         }
+        //         try {
+        //             // const trasaction: IDBTransaction = db.transaction(this.allStoreNames, 'readwrite');
+
+        //             resolve(db);
+        //         } catch (e: any) {
+        //             reject(new Error(e.toString()))
+        //         }
+
+
+
+
+        //     })
+        //     openReq.addEventListener('upgradeneeded', (event: DBOpenEvent) => {
+        //         const db: IDBDatabase | undefined = event?.target?.result;
+        //         if (!db) {
+        //             this.dBError('Error open request failed');
+        //             return;
+        //         }
+        //         this.createObjectStoreOnUpgrade(db, this.MAIN_STORE_NAME)
+        //         this.createObjectStoreOnUpgrade(db, this.MANAGMENT_STORE_NAME)
+        //         console.log('upgradeneeded');
+        //     })
+        //     openReq.addEventListener('error', () => {
+        //         this.dBError('Error open request failed');
+        //     })
+
+
+        // }) 
+    }
+    private openDBRequest(dbName: string): Promise<IDBDatabase | Error> {
+        const openReq: IDBOpenDBRequest = window.indexedDB.open(dbName, 1);
         return new Promise<IDBDatabase | Error>((resolve, reject) => {
             openReq.addEventListener('success', (event: DBOpenEvent) => {
                 const db: IDBDatabase | undefined = event?.target?.result;
                 if (!db) {
-
                     reject(new Error('Error open request failed'))
                     return;
                 }
@@ -54,12 +82,7 @@ export class DataBase {
                 }
 
 
-                //mainStore
-                // mainStore.transaction.oncomplete = (event: Event) => {
-                //     const transaction: IDBTransaction = db.transaction(this.MAIN_DB_NAME, 'readwrite');
-                //     const mainStore: IDBObjectStore = transaction.objectStore(this.MAIN_DB_NAME)
 
-                // }
 
             })
             openReq.addEventListener('upgradeneeded', (event: DBOpenEvent) => {
@@ -78,8 +101,6 @@ export class DataBase {
 
 
         })
-
-
     }
     private dBError(error: any) {
         let e = error
@@ -104,25 +125,32 @@ export class DataBase {
         return Math.floor(Math.random() * rng);
 
     }
-    private getTrasaction(): IDBTransaction | Error {
+    private getTrasaction(db: IDBDatabase): Promise<IDBTransaction> {
+        return new Promise((res, rej) => {
+            if (!db) {
+                throw new Error('No DB Object');
+            }
+            res(db.transaction(this.allStoreNames, 'readwrite'));
 
-        if (!this.mainDb) {
-            return new Error('No DB Object');
-        }
-        return this.mainDb.transaction(this.allStoreNames, 'readwrite');
+        })
 
     }
-    private getStore(storeName: StoreName | undefined, transaction: IDBTransaction): IDBObjectStore | Error {
-        if (!storeName) {
-            storeName = this.MAIN_STORE_NAME;
-        }
-        if (!this.mainDb) {
+    private getStore(storeName: StoreName | undefined, transaction: IDBTransaction): Promise<IDBObjectStore> {
+        return new Promise((res, rej) => {
+            if (!storeName) {
+                storeName = this.MAIN_STORE_NAME;
+            }
+            if (!this.mainDb) {
+                return new Error('No DB Object');
+            }
 
-            return new Error('No DB Object');
-        }
+            const store: IDBObjectStore = transaction.objectStore(storeName);
+            res(store)
 
-        const store: IDBObjectStore = transaction.objectStore(storeName);
-        return store;
+        })
+
+
+
     }
     public createObjectStoreOnUpgrade(db: IDBDatabase, storeName: string): void {
         if (db.objectStoreNames.contains(storeName)) {
@@ -130,22 +158,16 @@ export class DataBase {
         }
         db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
     }
-    public add<R extends DBRecord>(record: R, storeName?: StoreName) {
-        const transaction: IDBTransaction | Error = this.getTrasaction();
-        if (transaction instanceof Error) {
-            this.dBError(transaction);
-            return;
-        }
-        const store = this.getStore(storeName, transaction);
-        if (store instanceof Error) {
-            this.dBError(store);
-            return
-        }
-        if (!record.id) {
-            record.id = this.newId;
-        }
-        const request: IDBRequest = store.add(record);
-        transaction.commit();
+    public add<R extends DBRecord>(record: R, storeName?: StoreName): void | Promise<any> {
+        const db = this.mainDb;
+        this.getTrasaction(db!)
+            .then(trans => this.getStore(storeName, trans))
+            .then((store: IDBObjectStore) => {
+                if (!record.id) {
+                    record.id = this.newId;
+                }
+                const request: IDBRequest = store.add(record);
+            });
 
 
     }
