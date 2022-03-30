@@ -136,20 +136,30 @@ export class DataBase {
             if (!record.id) {
                 record.id = this.newId;
             }
-
+            const key: IDBValidKey = record.id;
             let request: IDBRequest;
             switch (reqType) {
                 case dbAction.add:
+                    request = store.add(record);
                     break;
                 case dbAction.delete:
+                    request = store.delete(key);
                     break;
-                case dbAction.view:
+                case dbAction.put:
+                    request = store.put(record);
                     break;
-                case dbAction.delete:
+                case dbAction.get:
+                    request = store.get(key);
+                    break;
+                case dbAction.getAll:
+                    request = store.getAll();
+                    break;
+                default:
+                    throw new Error("No proper action  type was found. Value: " + reqType.toString())
                     break;
 
             }
-            request = store.add(record);
+
 
             request.onsuccess = (ev: Event) => {
                 res({
@@ -207,6 +217,16 @@ export class DataBase {
         return this.indexDbAction({
             db: db,
             actionType: dbAction.add,
+            data: data,
+            storeName: storeName
+        })
+
+    }
+    public delete<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.delete,
             data: data,
             storeName: storeName
         })

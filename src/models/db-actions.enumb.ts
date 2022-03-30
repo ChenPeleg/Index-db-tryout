@@ -1,8 +1,11 @@
 export enum dbAction {
-    'open' = 'open',
+
     'delete' = 'delete',
-    'view' = 'view',
-    'query' = 'query',
+    'put' = 'put',
+    'getAll' = 'getAll',
     'add' = 'add',
+    'clear' = 'clear',
+    'count' = 'count',
+    'get' = 'get',
 
 }
