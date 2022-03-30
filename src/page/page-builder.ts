@@ -1,8 +1,8 @@
 
 import { dbAction } from '../models/db-actions.enumb';
-import EmojiHelper from './EmojiHelper';
-import randomImoji from './EmojiHelper';
-import { translations } from './translations';
+import EmojiHelper from '../services/EmojiHelper';
+import randomImoji from '../services/EmojiHelper';
+import { translations } from '../services/translations';
 
 
 export class PageBuilder {
@@ -21,8 +21,9 @@ export class PageBuilder {
     }
     #showMessage(m: string) {
         const messageDiv = document.querySelector('#message-div-id');
+        const html = `<div class="message-text">${m}</div>`
         if (!messageDiv) return;
-        messageDiv.innerHTML = m;
+        messageDiv.innerHTML = html;
 
     }
     #renderScreen(m: string): HTMLElement {
@@ -70,10 +71,6 @@ export class PageBuilder {
         messageDiv.id = 'message-div-id';
         messageDiv.classList.add('db-message-div');
         controlPanelDiv.appendChild(messageDiv);
-
-
-
-
         controlPanelDiv.addEventListener('db_button', (e) => {
             this.#eventFunc(e)
         })

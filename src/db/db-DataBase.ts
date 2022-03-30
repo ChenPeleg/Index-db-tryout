@@ -3,7 +3,8 @@
  * produced.
  */
 
-import { DBOpenEvent, DBRecord, Result, StoreName } from "./db-models";
+import { dbAction } from "../models/db-actions.enumb";
+import { DBOpenEvent, DBRecord, IndexDBRequest, IndexDBResult, StoreName } from "./db-models";
 
 export class DataBase {
     /**
@@ -17,16 +18,21 @@ export class DataBase {
     private dbTransaction: IDBTransaction | null = null;
     private static instance: DataBase;
     private constructor() {
-        console.log('db constractor');
-        this.initDB().then(db => {
-            this.mainDb = db as IDBDatabase;
-        }, (e) => {
-            this.dBError(e)
-        });
+        if (!('indexedDB' in window)) {
+            console.warn('IndexedDB not supported')
+
+        } else {
+            this.initDB().then(db => {
+                this.mainDb = db as IDBDatabase;
+            }, (e) => {
+                this.dBError(e)
+            });
+        }
+
     }
 
     private initDB(): Promise<IDBDatabase | Error> {
-        //const openReq: IDBOpenDBRequest = window.indexedDB.open(this.MAIN_DB_NAME, 1);
+
         return this.openDBRequest(this.MAIN_DB_NAME);
 
     }
@@ -40,7 +46,7 @@ export class DataBase {
                     return;
                 }
                 try {
-                    // const trasaction: IDBTransaction = db.transaction(this.allStoreNames, 'readwrite');
+
 
                     resolve(db);
                 } catch (e: any) {
@@ -74,7 +80,6 @@ export class DataBase {
             e = error.toString();
         }
         throw new Error(e)
-
     }
     public static get Instance(): DataBase {
         if (!DataBase.instance || true) {
@@ -96,7 +101,9 @@ export class DataBase {
             if (!db) {
                 throw new Error('No DB Object');
             }
-            res(db.transaction(this.allStoreNames, 'readwrite'));
+            const trans = db.transaction(this.allStoreNames, 'readwrite');
+            trans.onerror = e => rej(e);
+            res(trans);
 
         })
 
@@ -118,22 +125,42 @@ export class DataBase {
 
 
     }
-    private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: 'add' | 'get', record: R): Promise<Result<any>> {
+    private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: dbAction, record: Partial<R>): Promise<IndexDBResult<IDBRequest | any>> {
+        const requestForDebuging: IndexDBRequest = {
+            type: dbAction.add,
+            store: store.name,
+            data: record
+        }
         return new Promise((res, rej) => {
+
             if (!record.id) {
                 record.id = this.newId;
             }
+
             let request: IDBRequest;
+            switch (reqType) {
+                case dbAction.add:
+                    break;
+                case dbAction.delete:
+                    break;
+                case dbAction.view:
+                    break;
+                case dbAction.delete:
+                    break;
+
+            }
             request = store.add(record);
 
             request.onsuccess = (ev: Event) => {
                 res({
+                    actionRequested: requestForDebuging,
                     success: true,
                     data: request
                 })
             }
             request.onerror = (ev: Event) => {
                 rej({
+                    request: requestForDebuging,
                     success: false, error: ev
                 })
             }
@@ -142,23 +169,49 @@ export class DataBase {
         })
 
     }
-    public createObjectStoreOnUpgrade(db: IDBDatabase, storeName: string): void {
+    private createObjectStoreOnUpgrade(db: IDBDatabase, storeName: string): void {
         if (db.objectStoreNames.contains(storeName)) {
             return;
         }
         db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
     }
-    public add<R extends DBRecord>(record: R, storeName?: StoreName): Promise<any> {
-        const db = this.mainDb;
+    public get defaultStore(): StoreName {
+        return this.MAIN_STORE_NAME;
+    }
+    private indexDbAction<R>(actionParams: { db: IDBDatabase, storeName: StoreName, data: R, actionType: dbAction }): Promise<any> {
+        const { db, storeName, data, actionType } = actionParams;
+
         return this.getTrasaction(db!)
             .then(trans => this.getStore(storeName, trans))
-            .then((store: IDBObjectStore) => this.makeRequest(store, 'add', record))
-            .then((res: Result<any>) => console.log(res))
+            .then((store: IDBObjectStore) => this.makeRequest(store, dbAction.add, data))
+            .then((res: IndexDBResult<IDBRequest>) => res
+            )
             .catch(e => {
                 console.error("Cought Error: ", e);
             });
 
+    }
+    public add<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.add,
+            data: data,
+            storeName: storeName
+        })
 
     }
+
+    public get<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.add,
+            data: data,
+            storeName: storeName
+        })
+
+    }
+
 
 }

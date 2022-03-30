@@ -1,5 +1,5 @@
 import { HelperUtils } from './services/helper-utils';
-import { PageBuilder } from './services/page-builder';
+import { PageBuilder } from './page/page-builder';
 import './scripts/web-componenet-modal.js'
 import './scripts/web-componenet-staus-indicator.ts'
 import './scripts/web-cmp-screen-console.ts'
@@ -26,8 +26,9 @@ class App {
             case 'add':
                 const newRand = Math.floor(Math.random() * 100)
                 const data = this.inputText || 'new data';
-                this.db.add({ data, id: 0, randomNumber: newRand }).then(res => {
-                    const m = translations.success.add + ' ' + translations.details + ' ' + (res?.toString() || '');
+                this.db.add(this.db.defaultStore, { data, id: 0, randomNumber: newRand }).then(res => {
+                    console.log(res)
+                    const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
                     this.mainPage?.showMessage(m)
                 })
                 break;
@@ -36,7 +37,7 @@ class App {
                 this.inputText = text || this.inputText;
                 break;
             case 'view':
-                this.db.add({ id: 30 })
+                // this.db.get({ id: 30 })
 
 
 

@@ -71,7 +71,20 @@ body {
             width: 90%;
             margin: 10px;
             padding: 10px;
-            background-color: #7c65eb;
+            background-color: #c7c0e7;
+            border-radius: 10px;
+            min-height: 1.5rem;
+            div.message-text {
+                animation: appear 300ms forwards;
+            }
+        }
+    }
+    @keyframes appear {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
         }
     }
     div#console-div-id {
