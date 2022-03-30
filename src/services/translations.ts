@@ -13,7 +13,8 @@ export const translations: Partial<Record<string, string>> | any = {
     clear: 'נקה הכל',
     success: {
         delete: 'המחיקה התבצעה בהצלחה!',
-        view: 'הנתונים מוצגים בהצלחה!',
+        getAll: 'הנתונים מוצגים בהצלחה!',
+        clear: 'הנתונים נמחקו בהצלחה!',
         query: 'השאילתה הופקה בהצלחה',
         add: 'הרשומה נוספה בהצלחה!',
     },

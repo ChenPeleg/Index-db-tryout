@@ -42,6 +42,19 @@ class App {
                 })
 
                 break;
+            case 'clear':
+                this.db.clear(this.db.defaultStore).then(res => {
+                    const results = res.data.result;
+                    const m = translations.success.clear;
+                    this.mainPage?.showMessage(m);
+                    this.mainPage?.printRecords([])
+                })
+
+                break;
+            case 'type-text':
+                const textInput = event.detail.originalEvent?.target?.value;
+                this.inputText = textInput || this.inputText;
+                break;
             case 'view':
                 // this.db.get({ id: 30 })
 

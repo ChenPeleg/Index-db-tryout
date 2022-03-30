@@ -145,6 +145,10 @@ export class DataBase {
                 case dbAction.delete:
                     request = store.delete(key);
                     break;
+                case dbAction.clear:
+                    request = store.clear();
+                    console.log('cleared')
+                    break;
                 case dbAction.put:
                     request = store.put(record);
                     break;
@@ -154,9 +158,9 @@ export class DataBase {
                 case dbAction.getAll:
                     request = store.getAll();
                     break;
-                default:
-                    throw new Error("No proper action  type was found. Value: " + reqType.toString())
-                    break;
+                //  default:
+                //   throw new Error("No proper action  type was found.  "  
+
 
             }
 
@@ -227,6 +231,16 @@ export class DataBase {
         return this.indexDbAction({
             db: db,
             actionType: dbAction.getAll,
+            data: data || {},
+            storeName: storeName
+        })
+
+    }
+    public clear<R extends DBRecord>(storeName: StoreName, data?: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.clear,
             data: data || {},
             storeName: storeName
         })

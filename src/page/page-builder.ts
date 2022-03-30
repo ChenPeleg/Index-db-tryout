@@ -20,11 +20,16 @@ export class PageBuilder {
         this.#showMessage(m)
     }
     public printRecords(records: any[]) {
+        const recordToString = <R extends object>(record: R): string => {
+            const rec = JSON.stringify(record);
+            const regex: RegExp = /["'{}]/g;
+            return rec.replace(regex, " ");
+        }
         const id = 'db-records';
         const recordsDiv = document.querySelector(`#${id}`);
         if (!recordsDiv) return
-        let html = records.map(r => `<li>${r.id + " " + (r.name || '')}</li>`);
-        recordsDiv.innerHTML = `<ol>${html}</ol>`
+        let html = records.map(r => `<li>${recordToString(r)}</li>`);
+        recordsDiv.innerHTML = `<ol dir="ltr">${html}</ol>`
     }
     #showMessage(m: string) {
         const messageDiv = document.querySelector('#message-div-id');

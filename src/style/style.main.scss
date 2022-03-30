@@ -79,14 +79,7 @@ body {
             }
         }
     }
-    @keyframes appear {
-        0% {
-            opacity: 0;
-        }
-        100% {
-            opacity: 1;
-        }
-    }
+
     div#console-div-id {
         width: 30vw;
         background-color: #c7c19a;
@@ -107,5 +100,18 @@ body {
                 color: #690f2b;
             }
         }
+    }
+}
+div.db-records-list {
+    animation: appear 300ms forwards;
+    font-size: 14px;
+    line-height: 95%;
+}
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
