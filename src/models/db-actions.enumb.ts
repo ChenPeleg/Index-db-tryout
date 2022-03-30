@@ -1,11 +1,10 @@
 export enum dbAction {
 
-    'delete' = 'delete',
-    'put' = 'put',
-    'getAll' = 'getAll',
     'add' = 'add',
-    'clear' = 'clear',
-    'count' = 'count',
+    'getAll' = 'getAll',
+    'delete' = 'delete',
     'get' = 'get',
+    'put' = 'put',
+    'clear' = 'clear',
 
 }

@@ -26,15 +26,21 @@ class App {
             case 'add':
                 const newRand = Math.floor(Math.random() * 100)
                 const data = this.inputText || 'new data';
-                this.db.add(this.db.defaultStore, { data, id: 0, randomNumber: newRand }).then(res => {
+                const text = this.inputText || 'new data';
+                this.db.add(this.db.defaultStore, { data, text, id: 0, randomNumber: newRand }).then(res => {
                     console.log(res)
                     const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
                     this.mainPage?.showMessage(m)
                 })
                 break;
-            case 'type-text':
-                const text = event.detail.originalEvent?.target?.value;
-                this.inputText = text || this.inputText;
+            case 'getAll':
+                this.db.getAll(this.db.defaultStore).then(res => {
+                    const results = res.data.result;
+                    console.log(results)
+                    const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
+                    this.mainPage?.printRecords(results)
+                })
+
                 break;
             case 'view':
                 // this.db.get({ id: 30 })

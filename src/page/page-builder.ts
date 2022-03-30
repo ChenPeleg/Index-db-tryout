@@ -19,6 +19,13 @@ export class PageBuilder {
     public showMessage(m: string) {
         this.#showMessage(m)
     }
+    public printRecords(records: any[]) {
+        const id = 'db-records';
+        const recordsDiv = document.querySelector(`#${id}`);
+        if (!recordsDiv) return
+        let html = records.map(r => `<li>${r.id + " " + (r.name || '')}</li>`);
+        recordsDiv.innerHTML = `<ol>${html}</ol>`
+    }
     #showMessage(m: string) {
         const messageDiv = document.querySelector('#message-div-id');
         const html = `<div class="message-text">${m}</div>`

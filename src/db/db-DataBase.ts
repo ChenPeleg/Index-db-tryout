@@ -193,7 +193,7 @@ export class DataBase {
 
         return this.getTrasaction(db!)
             .then(trans => this.getStore(storeName, trans))
-            .then((store: IDBObjectStore) => this.makeRequest(store, dbAction.add, data))
+            .then((store: IDBObjectStore) => this.makeRequest(store, actionType, data))
             .then((res: IndexDBResult<IDBRequest>) => res
             )
             .catch(e => {
@@ -218,6 +218,16 @@ export class DataBase {
             db: db,
             actionType: dbAction.add,
             data: data,
+            storeName: storeName
+        })
+
+    }
+    public getAll<R extends DBRecord>(storeName: StoreName, data?: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.getAll,
+            data: data || {},
             storeName: storeName
         })
 
