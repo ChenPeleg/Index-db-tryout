@@ -15,13 +15,23 @@ import { translations } from './services/translations';
 class App {
     private db: DataBase;
     private inputText: string = "";
+    private idInputText: string = "";
     private mainPage: PageBuilder | null = null;
     constructor() {
         this.db = DataBase.Instance;
     }
 
     private buttonClicked = (event: any) => {
-        console.log(event.detail.action)
+        const getAllFunc = () => {
+            this.db.getAll(this.db.defaultStore).then(res => {
+                const results = res.data.result;
+                console.log(results)
+                const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
+                this.mainPage?.printRecords(results)
+            })
+        }
+
+        console.log(event.detail)
         switch (event.detail.action) {
             case 'add':
                 const newRand = Math.floor(Math.random() * 100)
@@ -30,16 +40,29 @@ class App {
                 this.db.add(this.db.defaultStore, { data, text, id: 0, randomNumber: newRand }).then(res => {
                     console.log(res)
                     const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
-                    this.mainPage?.showMessage(m)
+                    this.mainPage?.showMessage(m);
+                    getAllFunc();
+                })
+                break;
+            case 'put':
+                const idInput0 = document.querySelector('#id-input-id') as HTMLInputElement;
+                const putid = idInput0.value
+
+                if (!putid) {
+                    const m = translations.error.musthaveId;
+                    this.mainPage?.showMessage(m);
+                    return
+                }
+                const textput = this.inputText || 'new data';
+                this.db.put(this.db.defaultStore, { data: textput, textput, id: 0, randomNumber: putid }).then(res => {
+                    console.log(res)
+                    const m = translations.success.put + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
+                    this.mainPage?.showMessage(m);
+                    getAllFunc();
                 })
                 break;
             case 'getAll':
-                this.db.getAll(this.db.defaultStore).then(res => {
-                    const results = res.data.result;
-                    console.log(results)
-                    const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
-                    this.mainPage?.printRecords(results)
-                })
+                getAllFunc();
 
                 break;
             case 'clear':
@@ -55,7 +78,11 @@ class App {
                 const textInput = event.detail.originalEvent?.target?.value;
                 this.inputText = textInput || this.inputText;
                 break;
-            case 'view':
+            case 'clicked-list-item':
+                const idInput = document.querySelector('#id-input-id') as HTMLInputElement;
+                console.log(idInput)
+                const itemId = event.detail.itemId;
+                idInput.value = itemId;
                 // this.db.get({ id: 30 })
 
 

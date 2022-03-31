@@ -28,15 +28,15 @@ export class PageBuilder {
         const id = 'db-records';
         const recordsDiv = document.querySelector(`#${id}`);
         if (!recordsDiv) return
-        let html = records.map(r => `<li>${recordToString(r)}</li>`);
-        recordsDiv.innerHTML = `<ol dir="ltr">${html}</ol>`
+        let html = records.map(r => `<li data-item-id="${r.id}">${recordToString(r)}</li>`);
+        recordsDiv.innerHTML = `<ol dir="ltr">${html}</ol>`;
+
     }
     #showMessage(m: string) {
         const messageDiv = document.querySelector('#message-div-id');
         const html = `<div class="message-text">${m}</div>`
         if (!messageDiv) return;
         messageDiv.innerHTML = html;
-
     }
     #renderScreen(m: string): HTMLElement {
         const controlPanelDiv: HTMLElement = document.querySelector('#main-div-id') as HTMLElement;
@@ -66,7 +66,6 @@ export class PageBuilder {
         }
 
         const input = document.createElement('input');
-
         input.id = 'text-input-id';
         input.addEventListener('input', (e) => {
             const ev = new CustomEvent('db_button', {
@@ -79,13 +78,48 @@ export class PageBuilder {
         })
         input.classList.add('db-action-input');
         controlPanelDiv.appendChild(input);
+
+        const idinput = document.createElement('input');
+        idinput.id = 'id-input-id';
+        idinput.placeholder = 'Id';
+        idinput.addEventListener('input', (e) => {
+            const ev = new CustomEvent('db_button', {
+                detail: {
+                    originalEvent: e,
+                    action: 'id-type-text'
+                }
+            });
+            controlPanelDiv.dispatchEvent(ev)
+        })
+        idinput.classList.add('db-action-input', 'db-action-id-input');
+        controlPanelDiv.appendChild(idinput);
+
+
         const messageDiv = document.createElement('div');
         messageDiv.id = 'message-div-id';
         messageDiv.classList.add('db-message-div');
         controlPanelDiv.appendChild(messageDiv);
+
         controlPanelDiv.addEventListener('db_button', (e) => {
             this.#eventFunc(e)
         })
+        const id = 'db-records';
+        const recordsDiv = document.querySelector(`#${id}`);
+        recordsDiv?.addEventListener('click', (e) => {
+            const target = e.target as HTMLDListElement
+            const itemId = target.getAttribute('data-item-id')
+            console.log(itemId)
+            const ev = new CustomEvent('db_button', {
+                detail: {
+                    originalEvent: e,
+                    action: 'clicked-list-item',
+                    itemId: itemId
+                }
+            });
+            controlPanelDiv.dispatchEvent(ev)
+        })
+
+
 
         return controlPanelDiv
 

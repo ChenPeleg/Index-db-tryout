@@ -65,6 +65,14 @@ body {
                 @include elevationinsetfn(2);
             }
         }
+        input.db-action-id-input {
+            width: 40%;
+            &::placeholder {
+                /* Chrome, Firefox, Opera, Safari 10.1+ */
+                //color: rgb(179, 179, 179);
+                opacity: 0.5; /* Firefox */
+            }
+        }
         div.db-message-div {
             font-family: "Alef", sans-serif;
             font-size: $main-font-size - 10px;
@@ -106,6 +114,12 @@ div.db-records-list {
     animation: appear 300ms forwards;
     font-size: 14px;
     line-height: 95%;
+    cursor: pointer;
+    li {
+        &:hover {
+            color: #7e052b;
+        }
+    }
 }
 @keyframes appear {
     0% {

@@ -133,16 +133,20 @@ export class DataBase {
         }
         return new Promise((res, rej) => {
 
-            if (!record.id) {
-                record.id = this.newId;
-            }
-            const key: IDBValidKey = record.id;
+
+            const key: IDBValidKey | undefined = record.id;
             let request: IDBRequest;
             switch (reqType) {
                 case dbAction.add:
+                    if (!record.id) {
+                        record.id = this.newId;
+                    }
                     request = store.add(record);
                     break;
                 case dbAction.delete:
+                    if (!key) {
+                        throw new Error("No key was found for delete")
+                    }
                     request = store.delete(key);
                     break;
                 case dbAction.clear:
@@ -150,9 +154,15 @@ export class DataBase {
                     console.log('cleared')
                     break;
                 case dbAction.put:
+                    if (!record.id) {
+                        record.id = this.newId;
+                    }
                     request = store.put(record);
                     break;
                 case dbAction.get:
+                    if (!key) {
+                        throw new Error("No key was found for get")
+                    }
                     request = store.get(key);
                     break;
                 case dbAction.getAll:
@@ -251,6 +261,16 @@ export class DataBase {
         return this.indexDbAction({
             db: db,
             actionType: dbAction.delete,
+            data: data,
+            storeName: storeName
+        })
+
+    }
+    public put<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
+        const db: IDBDatabase = this.mainDb as IDBDatabase;
+        return this.indexDbAction({
+            db: db,
+            actionType: dbAction.put,
             data: data,
             storeName: storeName
         })

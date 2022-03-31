@@ -3,7 +3,7 @@ import { dbAction } from '../models/db-actions.enumb';
 
 
 
-export const translations: Partial<Record<string, string>> | any = {
+export const translations: Record<string, any> = {
 
     delete: 'מחק',
     put: 'עדכן',
@@ -15,8 +15,12 @@ export const translations: Partial<Record<string, string>> | any = {
         delete: 'המחיקה התבצעה בהצלחה!',
         getAll: 'הנתונים מוצגים בהצלחה!',
         clear: 'הנתונים נמחקו בהצלחה!',
+        put: 'הנתונים עודכנו בהצלחה!',
         query: 'השאילתה הופקה בהצלחה',
         add: 'הרשומה נוספה בהצלחה!',
+    },
+    error: {
+        musthaveId: "⚠️" + 'יש לציין מספר מזהה '
     },
     details: 'פרטים: '
 
