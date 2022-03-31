@@ -73,7 +73,7 @@ export class DataBase {
                 }
                 this.createObjectStoreOnUpgrade(db, this.MAIN_STORE_NAME)
                 this.createObjectStoreOnUpgrade(db, this.MANAGMENT_STORE_NAME)
-                console.log('upgradeneeded');
+                console.info('upgradeneeded');
             })
             openReq.addEventListener('error', () => {
                 this.dBError('Error open request failed');
@@ -100,7 +100,7 @@ export class DataBase {
         return allNames;
     }
     private get newId(): number {
-        const rng = 100000
+        const rng = 1000
         return Math.floor(Math.random() * rng);
 
     }
@@ -133,7 +133,7 @@ export class DataBase {
 
 
     }
-    private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: dbAction, record: Partial<R>): Promise<IndexDBResult<IDBRequest | any>> {
+    private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: dbAction, record: Partial<R>): Promise<IndexDBResult<IDBRequest, Error>> {
         const requestForDebuging: IndexDBRequest = {
             type: dbAction.add,
             store: store.name,
@@ -159,7 +159,7 @@ export class DataBase {
                     break;
                 case dbAction.clear:
                     request = store.clear();
-                    console.log('cleared')
+
                     break;
                 case dbAction.put:
                     if (!record.id) {
@@ -191,6 +191,7 @@ export class DataBase {
                 })
             }
             request.onerror = (ev: Event) => {
+
                 rej({
                     request: requestForDebuging,
                     success: false, error: ev
@@ -210,20 +211,18 @@ export class DataBase {
     public get defaultStore(): StoreName {
         return this.MAIN_STORE_NAME;
     }
-    private indexDbAction<R>(actionParams: { db: IDBDatabase, storeName: StoreName, data: R, actionType: dbAction }): Promise<any> {
+    private indexDbAction<R>(actionParams: { db: IDBDatabase, storeName: StoreName, data: R, actionType: dbAction }): Promise<IndexDBResult<IDBRequest, Error>> {
         const { db, storeName, data, actionType } = actionParams;
 
         return this.getTrasaction(db!)
             .then(trans => this.getStore(storeName, trans))
             .then((store: IDBObjectStore) => this.makeRequest(store, actionType, data))
-            .then((res: IndexDBResult<IDBRequest>) => res
+            .then((res: IndexDBResult<IDBRequest, Error>) => res
             )
-            .catch(e => {
-                console.error("Cought Error: ", e);
-            });
+
 
     }
-    public add<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
+    public add<R extends DBRecord>(storeName: StoreName, data: R): Promise<IndexDBResult<IDBRequest, Error>> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
             db: db,

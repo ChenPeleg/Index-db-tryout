@@ -108,7 +108,7 @@ export class PageBuilder {
         recordsDiv?.addEventListener('click', (e) => {
             const target = e.target as HTMLDListElement
             const itemId = target.getAttribute('data-item-id')
-            console.log(itemId)
+
             const ev = new CustomEvent('db_button', {
                 detail: {
                     originalEvent: e,
