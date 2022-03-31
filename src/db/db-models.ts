@@ -15,3 +15,5 @@ export interface IndexDBRequest {
 export type IndexDBResult<T, E = Error> =
     { actionRequested?: any; success: true; data: T; error?: E } |
     { actionRequested?: any; success: false; data?: T; error: E }
+
+export enum IDBStaus { 'pending', 'error', 'success' }

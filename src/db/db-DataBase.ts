@@ -4,37 +4,45 @@
  */
 
 import { dbAction } from "../models/db-actions.enumb";
-import { DBOpenEvent, DBRecord, IndexDBRequest, IndexDBResult, StoreName } from "./db-models";
+import { DBOpenEvent, DBRecord, IDBStaus, IndexDBRequest, IndexDBResult, StoreName } from "./db-models";
 
 export class DataBase {
     /**
+     * @settings:
      * 
      */
-    private MAIN_DB_NAME = "TextValues";
+    private static readonly Config = {
+        mainDbName: "appDB",
+        StoreNames: [],
+        createIdIfMissing: false
+    }
+    private MAIN_DB_NAME = DataBase.Config.mainDbName;
     private readonly MAIN_STORE_NAME: StoreName = "Sites";
     private MANAGMENT_STORE_NAME = "manageDd";
     private mainStore: IDBObjectStore | null = null;
     private mainDb: IDBDatabase | null = null;
     private dbTransaction: IDBTransaction | null = null;
     private static instance: DataBase;
+    private idbStatus: IDBStaus = IDBStaus.pending;
+    public get dbStatus(): IDBStaus { return this.idbStatus };
     private constructor() {
         if (!('indexedDB' in window)) {
             console.warn('IndexedDB not supported')
-
+            this.idbStatus = IDBStaus.error;
         } else {
             this.initDB().then(db => {
                 this.mainDb = db as IDBDatabase;
-            }, (e) => {
-                this.dBError(e)
+                this.idbStatus = IDBStaus.success;
+            }, (err) => {
+                this.idbStatus = IDBStaus.error;
+                this.dBError(err)
             });
         }
 
     }
 
     private initDB(): Promise<IDBDatabase | Error> {
-
         return this.openDBRequest(this.MAIN_DB_NAME);
-
     }
     private openDBRequest(dbName: string): Promise<IDBDatabase | Error> {
         const openReq: IDBOpenDBRequest = window.indexedDB.open(dbName, 1);

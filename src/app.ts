@@ -19,6 +19,11 @@ class App {
     private mainPage: PageBuilder | null = null;
     constructor() {
         this.db = DataBase.Instance;
+        if (this.db.dbStatus) {
+            console.log('dbinit sccess!')
+        } else {
+            console.error('db not succesfull')
+        }
     }
 
     private buttonClicked = (event: any) => {
@@ -54,7 +59,7 @@ class App {
                     return
                 }
                 const textput = this.inputText || 'new data';
-                this.db.put(this.db.defaultStore, { data: textput, textput, id: 0, randomNumber: putid }).then(res => {
+                this.db.put(this.db.defaultStore, { data: textput, textput, id: putid }).then(res => {
                     console.log(res)
                     const m = translations.success.put + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
                     this.mainPage?.showMessage(m);
