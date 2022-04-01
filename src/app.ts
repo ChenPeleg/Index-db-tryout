@@ -50,7 +50,7 @@ class App {
 
                 this.db.add(this.db.defaultStore, { data, id: this.idInInput }).then(res => {
 
-                    const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
+                    const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested?.data.id;
                     this.mainPage?.showMessage(m);
                     getAllFunc();
                 }).catch((e) => {
@@ -145,6 +145,10 @@ class App {
     }
 
     private errorHandler(originalErr: any): any {
+        console.error(originalErr);
+        if (this) {
+            return false
+        }
         /**
          * @argument e if the argument has success
          * property than it is the custom IndexDBResult<> 
@@ -165,12 +169,12 @@ class App {
             })
             changed = onlyError;
 
-            const extendedError = new ExtendedError(onlyError)
+            const extendedError = new ExtendedError(onlyError, { info: { more: 'sdfsdfsf' }, preMessage: 'Custom Error :' })
             rethrown = extendedError
         }
 
-        console.dir(rethrown);
-        console.dir(onlyError);
+        // console.error(rethrown);
+
 
 
     }

@@ -3,6 +3,7 @@
  * produced.
  */
 
+import { ExtendedError, ExtendedErrorOptions } from "../errors/extended-error";
 import { dbAction } from "../models/db-actions.enumb";
 import { DBOpenEvent, DBRecord, IDBStaus, IndexDBRequest, IndexDBResult, StoreName } from "./db-models";
 
@@ -176,8 +177,7 @@ export class DataBase {
                 case dbAction.getAll:
                     request = store.getAll();
                     break;
-                //  default:
-                //   throw new Error("No proper action  type was found.  "  
+
 
 
             }
@@ -193,7 +193,7 @@ export class DataBase {
             request.onerror = (ev: Event) => {
 
                 rej({
-                    request: requestForDebuging,
+                    actionRequested: requestForDebuging,
                     success: false, error: ev
                 })
             }
@@ -218,9 +218,63 @@ export class DataBase {
             .then(trans => this.getStore(storeName, trans))
             .then((store: IDBObjectStore) => this.makeRequest(store, actionType, data))
             .then((res: IndexDBResult<IDBRequest, Error>) => res
-            )
+            ).catch((e: Error | { actionRequested?: any; success: false; data?: any; error: Error }) => {
+
+                let errorTothrow: Error;
+                if (e instanceof Error) {
+
+                    errorTothrow = e;
+                } else {
+
+                    const errorEvent: any = e.error;
+                    const onlyError: Error = errorEvent.target.error;
+                    const errorData = this.buildExtendedErrorData(e);
+                    console.log(errorData)
+                    errorTothrow = new ExtendedError(onlyError, errorData)
+                    throw errorTothrow
+                }
+
+                throw errorTothrow
+            })
 
 
+    }
+    buildExtendedErrorData(data: IndexDBResult<IDBRequest, Error>): ExtendedErrorOptions {
+        const extendedErrorOp: ExtendedErrorOptions = {};
+        const errorEvent: any = data.error;
+        const onlyError: Error = errorEvent.target.error;
+
+
+        if (data.actionRequested) {
+            const actionRequested: IndexDBRequest = data.actionRequested;
+            const id = actionRequested.data?.id || '';
+            const actionType = actionRequested.type;
+            const store = actionRequested.store;
+            let verb = 'from';
+            switch (actionType) {
+                case "add":
+                    verb = 'to'
+                    break;
+                case "put":
+                    verb = 'in'
+                    break;
+                case "get":
+                    verb = 'from'
+                    break;
+                case "clear":
+                    verb = ' '
+                    break;
+            }
+            if (actionType === 'add' || 'put') {
+
+            }
+            const idData = id ? "id: " + id : ""
+            extendedErrorOp.postMessage = ` ('${actionType}' ${verb} store '${store}' ${idData})`
+
+        }
+
+
+        return extendedErrorOp
     }
     public add<R extends DBRecord>(storeName: StoreName, data: R): Promise<IndexDBResult<IDBRequest, Error>> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;

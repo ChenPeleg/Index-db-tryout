@@ -8,12 +8,12 @@ export interface DBRecord {
 };
 export type StoreName = 'Sites' | 'Translations' | 'GeneralData';
 export interface IndexDBRequest {
-    type?: dbAction,
+    type: dbAction,
     store: string,
     data: any
 }
 export type IndexDBResult<T, E = Error> =
-    { actionRequested?: any; success: true; data: T; error?: E } |
-    { actionRequested?: any; success: false; data?: T; error: E }
+    { actionRequested?: IndexDBRequest; success: true; data: T; error?: E } |
+    { actionRequested?: IndexDBRequest; success: false; data?: T; error: E }
 
 export enum IDBStaus { 'pending', 'error', 'success' }
