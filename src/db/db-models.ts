@@ -6,10 +6,10 @@ export interface DBOpenEvent extends Event {
 export interface DBRecord {
     id: string | number
 };
-export type StoreName = 'Sites' | 'Translations' | 'GeneralData';
+export type StoreName = 'Sites' | 'Translations' | 'GeneralData' | 'nonExisting';
 export interface IndexDBRequest {
-    type: dbAction,
-    store: string,
+    actionType: dbAction,
+    storeName: StoreName,
     data: any
 }
 export type IndexDBResult<T, E = Error> =

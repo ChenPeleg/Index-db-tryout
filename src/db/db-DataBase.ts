@@ -15,7 +15,8 @@ export class DataBase {
     private static readonly Config = {
         mainDbName: "appDB",
         StoreNames: [],
-        createIdIfMissing: false
+        createIdIfMissing: false,
+        IdsCanOnlyBeStrings: true
     }
     private MAIN_DB_NAME = DataBase.Config.mainDbName;
     private readonly MAIN_STORE_NAME: StoreName = "Sites";
@@ -100,9 +101,14 @@ export class DataBase {
         const allNames: string[] = [this.MAIN_STORE_NAME, this.MANAGMENT_STORE_NAME];
         return allNames;
     }
-    private get newId(): number {
-        const rng = 1000
-        return Math.floor(Math.random() * rng);
+    private get newId(): number | string {
+        const rng = 1000;
+        let numId = Math.floor(Math.random() * rng);
+        if (DataBase.Config.IdsCanOnlyBeStrings) {
+            return numId.toString();
+        }
+        return numId;
+
 
     }
     private getTrasaction(db: IDBDatabase): Promise<IDBTransaction> {
@@ -136,20 +142,25 @@ export class DataBase {
     }
     private makeRequest<R extends DBRecord>(store: IDBObjectStore, reqType: dbAction, record: Partial<R>): Promise<IndexDBResult<IDBRequest, Error>> {
         const requestForDebuging: IndexDBRequest = {
-            type: dbAction.add,
-            store: store.name,
-            data: record
+            actionType: dbAction.add,
+            storeName: store.name as StoreName,
+            data: record,
         }
         return new Promise((res, rej) => {
-
-
-            const key: IDBValidKey | undefined = record.id;
+            let key: IDBValidKey | undefined = record.id;
+            if (DataBase.Config.IdsCanOnlyBeStrings && key && +key > 0) {
+                key = key.toString();
+            }
             let request: IDBRequest;
             switch (reqType) {
                 case dbAction.add:
                     if (!record.id) {
                         record.id = this.newId;
+                    } else if (DataBase.Config.IdsCanOnlyBeStrings) {
+                        record.id = record.id.toString()
                     }
+
+
                     request = store.add(record);
                     break;
                 case dbAction.delete:
@@ -165,6 +176,8 @@ export class DataBase {
                 case dbAction.put:
                     if (!record.id) {
                         record.id = this.newId;
+                    } else if (DataBase.Config.IdsCanOnlyBeStrings) {
+                        record.id = record.id.toString()
                     }
                     request = store.put(record);
                     break;
@@ -184,6 +197,7 @@ export class DataBase {
 
 
             request.onsuccess = (ev: Event) => {
+                console.log('gotit', ev, request)
                 res({
                     actionRequested: requestForDebuging,
                     success: true,
@@ -191,10 +205,11 @@ export class DataBase {
                 })
             }
             request.onerror = (ev: Event) => {
-
+                const err = new Error((ev as any)['target']['error']['message']);
+                const errorEvent = { target: { error: err } }
                 rej({
                     actionRequested: requestForDebuging,
-                    success: false, error: ev
+                    success: false, error: errorEvent
                 })
             }
 
@@ -211,75 +226,106 @@ export class DataBase {
     public get defaultStore(): StoreName {
         return this.MAIN_STORE_NAME;
     }
-    private indexDbAction<R>(actionParams: { db: IDBDatabase, storeName: StoreName, data: R, actionType: dbAction }): Promise<IndexDBResult<IDBRequest, Error>> {
-        const { db, storeName, data, actionType } = actionParams;
-
-        return this.getTrasaction(db!)
+    private indexDbAction<R>(actionParams: IndexDBRequest): Promise<IndexDBResult<IDBRequest, Error>> {
+        const { storeName, data, actionType } = actionParams;
+        return this.getTrasaction(this.mainDb!)
             .then(trans => this.getStore(storeName, trans))
             .then((store: IDBObjectStore) => this.makeRequest(store, actionType, data))
             .then((res: IndexDBResult<IDBRequest, Error>) => res
-            ).catch((e: Error | { actionRequested?: any; success: false; data?: any; error: Error }) => {
+            ).catch((originalErr: Error | { actionRequested?: any; success: false; data?: any; error: Error }) => {
+                let errorTothrow: Error | { actionRequested?: any; success: false; data?: any; error: Error } = originalErr;
+                let extendedErr: { actionRequested?: any; success: false; data?: any; error: any };
+                if (originalErr instanceof Error) {
+                    extendedErr = {
+                        success: false,
+                        error: {
+                            target: {
+                                error: originalErr
+                            }
+                        },
 
-                let errorTothrow: Error;
-                if (e instanceof Error) {
+                    }
 
-                    errorTothrow = e;
+
                 } else {
-
-                    const errorEvent: any = e.error;
+                    extendedErr = originalErr
+                }
+                try {
+                    const errorEvent: any = extendedErr.error;
                     const onlyError: Error = errorEvent.target.error;
-                    const errorData = this.buildExtendedErrorData(e);
-                    console.log(errorData)
-                    errorTothrow = new ExtendedError(onlyError, errorData)
+                    extendedErr = Object.assign(extendedErr, { actionRequested: actionParams })
+
+                    extendedErr.actionRequested['dataBase'] = this.MAIN_DB_NAME;
+                    const errorData = this.buildExtendedErrorData(extendedErr);
+                    errorTothrow = new ExtendedError(onlyError, errorData);
+
+                    throw errorTothrow
+                } catch (e) {
                     throw errorTothrow
                 }
 
-                throw errorTothrow
             })
 
 
     }
     buildExtendedErrorData(data: IndexDBResult<IDBRequest, Error>): ExtendedErrorOptions {
         const extendedErrorOp: ExtendedErrorOptions = {};
-        const errorEvent: any = data.error;
-        const onlyError: Error = errorEvent.target.error;
+        try {
 
 
-        if (data.actionRequested) {
-            const actionRequested: IndexDBRequest = data.actionRequested;
-            const id = actionRequested.data?.id || '';
-            const actionType = actionRequested.type;
-            const store = actionRequested.store;
-            let verb = 'from';
-            switch (actionType) {
-                case "add":
-                    verb = 'to'
-                    break;
-                case "put":
-                    verb = 'in'
-                    break;
-                case "get":
-                    verb = 'from'
-                    break;
-                case "clear":
-                    verb = ' '
-                    break;
+            if (data.actionRequested) {
+                const actionRequested: IndexDBRequest = data.actionRequested;
+                const id = actionRequested.data?.id || '';
+                const actionType = actionRequested.actionType;
+                const store = actionRequested.storeName;
+                let verb = 'from';
+                switch (actionType) {
+                    case "add":
+                        verb = 'to'
+                        break;
+                    case "put":
+                        verb = 'in'
+                        break;
+                    case "get":
+                        verb = 'from'
+                        break;
+                    case "clear":
+                        verb = ' '
+                        break;
+                }
+                if (actionType === 'add' || 'put') {
+
+                }
+                const idData = id ? "id: " + id : ""
+                extendedErrorOp.postMessage = ` ('${actionType}' ${verb} store '${store}' ${idData})`
+
             }
-            if (actionType === 'add' || 'put') {
+            const moreinfo: any = {}
+            Object.keys(data).forEach(key => {
 
+                if (key !== 'error') {
+                    moreinfo[key] = (data as any)[key]
+                }
+
+            })
+            extendedErrorOp.info = moreinfo
+        } catch (e) {
+            extendedErrorOp.info = {
+                message: 'internal error in the buildExtendedErrorData function',
+                err: e
             }
-            const idData = id ? "id: " + id : ""
-            extendedErrorOp.postMessage = ` ('${actionType}' ${verb} store '${store}' ${idData})`
-
         }
-
 
         return extendedErrorOp
     }
     public add<R extends DBRecord>(storeName: StoreName, data: R): Promise<IndexDBResult<IDBRequest, Error>> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
+        const requestForDebuging: IndexDBRequest = {
+            actionType: dbAction.add,
+            storeName: storeName,
+            data: data,
+        }
         return this.indexDbAction({
-            db: db,
             actionType: dbAction.add,
             data: data,
             storeName: storeName
@@ -290,8 +336,7 @@ export class DataBase {
     public get<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
-            db: db,
-            actionType: dbAction.add,
+            actionType: dbAction.get,
             data: data,
             storeName: storeName
         })
@@ -300,7 +345,6 @@ export class DataBase {
     public getAll<R extends DBRecord>(storeName: StoreName, data?: R): Promise<any> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
-            db: db,
             actionType: dbAction.getAll,
             data: data || {},
             storeName: storeName
@@ -310,7 +354,6 @@ export class DataBase {
     public clear<R extends DBRecord>(storeName: StoreName, data?: R): Promise<any> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
-            db: db,
             actionType: dbAction.clear,
             data: data || {},
             storeName: storeName
@@ -320,7 +363,6 @@ export class DataBase {
     public delete<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
-            db: db,
             actionType: dbAction.delete,
             data: data,
             storeName: storeName
@@ -330,7 +372,6 @@ export class DataBase {
     public put<R extends DBRecord>(storeName: StoreName, data: R): Promise<any> {
         const db: IDBDatabase = this.mainDb as IDBDatabase;
         return this.indexDbAction({
-            db: db,
             actionType: dbAction.put,
             data: data,
             storeName: storeName

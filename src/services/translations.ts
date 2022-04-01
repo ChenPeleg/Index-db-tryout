@@ -11,6 +11,7 @@ export const translations: Record<string, any> = {
     get: 'שאילתה',
     add: 'הוסף',
     clear: 'נקה הכל',
+    console: 'קונסולה',
     success: {
         delete: 'המחיקה התבצעה בהצלחה!',
         getAll: 'הנתונים מוצגים בהצלחה!',

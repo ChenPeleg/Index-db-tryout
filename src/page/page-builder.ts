@@ -28,7 +28,7 @@ export class PageBuilder {
         const id = 'db-records';
         const recordsDiv = document.querySelector(`#${id}`);
         if (!recordsDiv) return
-        let html = records.map(r => `<li data-item-id="${r.id}">${recordToString(r)}</li>`);
+        let html = records.map(r => `<li class="list-item-with-data-item-id"  data-item-id="${r.id}">${recordToString(r)}</li>`);
         recordsDiv.innerHTML = `<ol dir="ltr">${html}</ol>`;
 
     }

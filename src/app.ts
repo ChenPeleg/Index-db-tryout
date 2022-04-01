@@ -7,6 +7,7 @@ import './style/style.main.scss'
 import { DataBase } from './db/db-DataBase';
 import { translations } from './services/translations';
 import { ExtendedError } from './errors/extended-error';
+import { StoreName } from './db/db-models';
 
 
 
@@ -37,7 +38,6 @@ class App {
                 const m = translations.success.add + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
                 this.mainPage?.printRecords(results)
             }, (e) => {
-                console.log('rejected')
                 throw new ExtendedError(e)
             }).catch(e => this.errorHandler(e))
         }
@@ -110,13 +110,15 @@ class App {
                         this.mainPage?.showMessage(m);
                         return
                     }
-                    const textput = this.inputText || 'new data';
-                    this.db.get(this.db.defaultStore, { id: getId }).then(res => {
+                    const storeName: StoreName = this.db.defaultStore
+                    this.db.get(storeName, { id: getId }).then(res => {
 
                         const m = translations.success.query + ' ' + translations.details + ' Id: ' + res.actionRequested.data.id;
                         const results = res.data.result;
+                        console.log(results)
+                        const resArr = Array.isArray(results) ? results : results ? [results] : []
                         this.mainPage?.showMessage(m);
-                        this.mainPage?.printRecords(results)
+                        this.mainPage?.printRecords(resArr)
                     }).catch(e => this.errorHandler(e))
                 }
 
@@ -146,50 +148,32 @@ class App {
 
     private errorHandler(originalErr: any): any {
         console.error(originalErr);
-        if (this) {
-            return false
-        }
-        /**
-         * @argument e if the argument has success
-         * property than it is the custom IndexDBResult<> 
-         * type, and then the error is in the error propery 
-         */
-        let rethrown = null;
-        let changed = null;
-        let onlyError = originalErr;
-        if (originalErr.success !== undefined) {
-            onlyError = originalErr.error.target.error;
-            const moreinfo: any = {}
-            Object.keys(originalErr).forEach(key => {
-                console.info(key)
-                if (key !== 'error') {
-                    moreinfo[key] = originalErr[key]
-                }
-
-            })
-            changed = onlyError;
-
-            const extendedError = new ExtendedError(onlyError, { info: { more: 'sdfsdfsf' }, preMessage: 'Custom Error :' })
-            rethrown = extendedError
-        }
-
-        // console.error(rethrown);
-
-
-
     }
     start() {
         HelperUtils.monkeyPatchConsoleLog();
         this.mainPage = new PageBuilder(this.buttonClicked);
         this.mainPage.render('');
-        setTimeout(_ => this.buttonClicked({ detail: { action: 'getAll' } }), 200)
-
-
-
+        setTimeout(_ => {
+            this.buttonClicked({
+                detail: { action: 'getAll' }
+            });
+            setTimeout(_ => {
+                const item = document.querySelector('.list-item-with-data-item-id');
+                if (item) {
+                    const idInput = document.querySelector('#id-input-id') as HTMLInputElement;
+                    const itemId = item.getAttribute('data-item-id') || '';
+                    idInput.value = itemId;
+                }
+            }, 200);
+        }
+            , 200)
     }
 
 
+
 }
+
+
 const app: App = new App();
 
 

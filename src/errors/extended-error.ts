@@ -22,7 +22,10 @@ export class ExtendedError extends Error {
                 this.info = options.info
             }
         }
-        this.message = finalMessage
+        this.message = finalMessage;
+        if (finalMessage !== orgError.message) {
+            this.stack = orgError.stack?.replace(orgError.message, finalMessage);
+        }
         Object.setPrototypeOf(this, orgError);
 
     }
