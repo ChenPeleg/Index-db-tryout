@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "jeremyrajan.webpack"
+        "jeremyrajan.webpack",
+        "WallabyJs.quokka-vscode"
     ]
 }

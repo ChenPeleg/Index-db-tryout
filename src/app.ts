@@ -10,7 +10,7 @@ import { ExtendedError } from './errors/extended-error';
 import { StoreName } from './db/db-models';
 
 
-
+console.log('asdf');
 
 
 
@@ -153,11 +153,11 @@ class App {
         HelperUtils.monkeyPatchConsoleLog();
         this.mainPage = new PageBuilder(this.buttonClicked);
         this.mainPage.render('');
-        setTimeout(_ => {
+        setTimeout((_: any) => {
             this.buttonClicked({
                 detail: { action: 'getAll' }
             });
-            setTimeout(_ => {
+            setTimeout((_: any) => {
                 const item = document.querySelector('.list-item-with-data-item-id');
                 if (item) {
                     const idInput = document.querySelector('#id-input-id') as HTMLInputElement;

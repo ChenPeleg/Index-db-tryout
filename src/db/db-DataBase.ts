@@ -107,6 +107,7 @@ export class DataBase {
         if (DataBase.Config.IdsCanOnlyBeStrings) {
             return numId.toString();
         }
+        console.log([, 1, 1, 1]);
         return numId;
 
 
